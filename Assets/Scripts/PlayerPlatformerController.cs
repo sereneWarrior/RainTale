@@ -16,37 +16,24 @@ public class PlayerPlatformerController : PhysicsObject
         animator = GetComponent<Animator>();
     }
 
-    void Start()
-    {
-        
-    }
-
     protected override void ComputeVelocity()
     {
         Vector2 move = Vector2.zero;
 
         move.x = Input.GetAxis("Horizontal");
 
-        //just jump if on the ground
+        // Just jump if on the ground.
         if(Input.GetButtonDown("Jump") && isGrounded)
         {   
             animator.SetTrigger("TakeOf");
         }
-        //cancel jump in mid air
-        else if (Input.GetButtonUp("Jump"))
-        {   
-            
-            if(velocity.y > 0) //moving upwards
-                velocity.y  = velocity.y * 0.5f;
-        }
 
-        if(isGrounded)
+        if (isGrounded)
             animator.SetBool("IsJumping", false);
         else
             animator.SetBool("IsJumping", true);
 
-        
-        if(move.x == 0)
+        if (move.x == 0 )
         {
             animator.SetBool("IsWalking", false);
         }
@@ -55,17 +42,22 @@ public class PlayerPlatformerController : PhysicsObject
             animator.SetBool("IsWalking", true);
         }
 
-        //TODO renew flip sprite
+        //TODO: Create flipped sprite.
         bool flipSprite = (spriteRenderer.flipX ? (move.x > 0f) : (move.x < 0f));
         if(flipSprite)
         {
             spriteRenderer.flipX = !spriteRenderer.flipX;
         }
-        
+
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("land"))
+        {
+            return;
+        }
 
         targetVelocity = move * maxSpeed;
     }
 
+    // Is called by the animation.
     private void Jump()
     {
         velocity.y = jumpSpeed;
